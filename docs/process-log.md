@@ -6,6 +6,10 @@ Audit trail of how the development process evolved. One entry per retro. See ADR
 
 Initial process written during the founding grilling session, before any practical use. All artefacts stamped `unproven`: `CLAUDE.md`, `.claude/skills/{playtest-brief,playtest-ingest,retro}`, `docs/agents/*`. First real retro due at end of Phase 0.
 
+## 2026-07-30 — user-directed amendment: hooks and language toolchains (not a retro)
+
+Claude Code hooks added (`.claude/hooks/` + `.claude/settings.json`, all tested): deny edits to generated files and acceptance specs (mechanises the F1 oracle mitigation), deny `git commit --no-verify`, auto-format `.py`/`.rs` on edit. A fourth (lint-after-edit) deferred pending Phase 0 latency measurement. Python toolchain decided: uv, ruff, ty (Astral, user's explicit choice over pyright), pytest/hypothesis, coverage.py, mutmut. Rust: pinned toolchain, clippy `-D warnings`, rustfmt. Blanket strictness principle: warnings are errors; suppressions need inline justification.
+
 ## 2026-07-30 — user-directed amendment: versioning standards (not a retro)
 
 Adopted Conventional Commits 1.0.0, Keep a Changelog 1.1.0, SemVer 2.0.0 (ADR-0010). Enforcement: cocogitto 7.0.0 installed, `commit-msg` hook active and verified rejecting bad messages, existing history checked clean, `CHANGELOG.md` seeded, CLAUDE.md contract updated, `cog check` earmarked for `just check`.

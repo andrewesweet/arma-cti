@@ -49,6 +49,16 @@ Every harness verdict carries a `class`. Read it before anything else. Untyped r
 
 **Never**: edit an acceptance spec to make it pass; add a sleep, retry, or timeout extension to make a test pass; introduce a bare `random` or bare `sleep` in SQF (seeded PRNG and CBA scheduler adapters only); treat `infra_unavailable` as a result.
 
+## Toolchains
+
+Strictness principle: every tool runs in its strictest practical mode and warnings are errors. A suppression (`# noqa`, `#[allow]`, ignore entry) requires an inline comment justifying it.
+
+- **Python** (daemon, planner, tests): managed by `uv` (locked deps, pinned interpreter; run everything via `uv run`). `ruff` for lint + format; `ty` (Astral) for type checking; `pytest` + `hypothesis`; `coverage.py`; `mutmut` scoped to snapshot save/load and the planner.
+- **Rust** (shim only): toolchain pinned in `rust-toolchain.toml`; `cargo clippy -- -D warnings` and `rustfmt --check` in `just check`; `cargo-xwin` for the Windows `.dll`.
+- **SQF**: HEMTT lints are the primary static tier (SQF-VM optional — see docs/research/arma-toolchain.md).
+
+Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanically: no edits to generated files or acceptance specs (`tests/specs/`), no `git commit --no-verify`, auto-format on edit. A hook denial is a signal you're on a gated surface — propose, don't work around.
+
 ## Commits, changelog, versioning (ADR-0010)
 
 - Commit messages follow Conventional Commits 1.0.0 (`feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `chore`, `ci`; optional scope; `BREAKING CHANGE:` footer or `!` for breaking). A `commit-msg` hook (`cog verify`) rejects everything else; if the hook is missing on a fresh clone, run `cog install-hook commit-msg`.
