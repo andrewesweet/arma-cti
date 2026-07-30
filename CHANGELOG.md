@@ -124,3 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unnamed slot is never assigned.
 - The auto-format hook ran `rustfmt` at edition 2021 against an edition 2024 crate, so it wrote
   files that `cargo fmt --check` then rejected.
+- The scoped SQF ban gate descended into nested agent worktrees under `.claude/worktrees/`,
+  where every copy of the PRNG adapter fails the path-based allowlist, so `just check` broke in
+  the main checkout whenever a worktree existed. `.claude` is now excluded; each worktree runs
+  the gate on its own tree.

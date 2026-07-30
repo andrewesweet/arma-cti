@@ -31,8 +31,12 @@ SCOPED_BANS: Final[dict[str, frozenset[str]]] = {
 }
 
 # Directories that are not our SQF: the vendored wiki quotes engine samples,
-# and build output is a copy of what we already checked.
-EXCLUDED_DIRS: Final = frozenset({".git", ".venv", ".hemttout", ".spike-out", "docs", "target"})
+# build output is a copy of what we already checked, and .claude holds nested
+# agent worktrees — whole checkouts whose files only match the allowlist with
+# the worktree prefix stripped, and which run this gate on their own trees.
+EXCLUDED_DIRS: Final = frozenset(
+    {".git", ".venv", ".hemttout", ".spike-out", ".claude", "docs", "target"}
+)
 
 
 class Finding(NamedTuple):

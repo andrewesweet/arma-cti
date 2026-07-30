@@ -92,3 +92,17 @@ def test_the_vendored_wiki_is_not_scanned() -> None:
     scanned = {p.relative_to(_ROOT).as_posix() for p in check_sqf_bans.sqf_files(_ROOT)}
     assert scanned, "expected to find our own SQF"
     assert not any(path.startswith("docs/") for path in scanned)
+
+
+def test_nested_agent_worktrees_are_not_scanned(tmp_path: Path) -> None:
+    # A worktree under .claude/worktrees/ is a whole checkout: its files match
+    # the allowlist only with the worktree prefix stripped, so scanning it from
+    # the outer root reports the adapter itself as a violation. Each worktree
+    # runs this gate on its own tree; the outer run must not descend into it.
+    ours = tmp_path / "addons" / "main" / "functions" / "fn_other.sqf"
+    nested = tmp_path / ".claude" / "worktrees" / "wt" / ADAPTER
+    for path in (ours, nested):
+        path.parent.mkdir(parents=True)
+        path.write_text("random 1;\n", encoding="utf-8")
+    scanned = {p.relative_to(tmp_path).as_posix() for p in check_sqf_bans.sqf_files(tmp_path)}
+    assert scanned == {"addons/main/functions/fn_other.sqf"}
