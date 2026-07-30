@@ -19,5 +19,5 @@ Write `docs/playtest/NNNN-<slug>.md` (NNNN = next number in the directory):
 Constraints:
 
 - The perceptual checklist (standing look/feel/sound items included in every brief) is capped at ~10 items and grows only with human sign-off.
-- Total brief must be playable in under 45 minutes.
+- Total brief must be playable in under 45 minutes, and the document itself sized to what the playtest needs — no padding, no boilerplate sections.
 - Tell the user the brief is ready and where it is; do not chase them to play it.

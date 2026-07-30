@@ -49,6 +49,15 @@ Every harness verdict carries a `class`. Read it before anything else. Untyped r
 
 **Never**: edit an acceptance spec to make it pass; add a sleep, retry, or timeout extension to make a test pass; introduce a bare `random` or bare `sleep` in SQF (seeded PRNG and CBA scheduler adapters only); treat `infra_unavailable` as a result.
 
+## Working style
+
+- Deliver what was asked, at the scope intended. Make routine judgement calls yourself; check in only when different readings of the request would lead to materially different work. If the request seems mistaken or a better approach exists, say so in a sentence and continue as asked.
+- The gates above are this project's verification. Do not add further verification passes, re-checks, or verifier subagents beyond them.
+- Delegate to subagents only for sizeable, genuinely independent tracks of work. Do not delegate what you can finish yourself in a handful of tool calls, and never to double-check your own work.
+- Ground progress claims in tool results from this session: quote failing output, name skipped steps, mark unverified work as unverified.
+- In any review pass, report everything you find; filtering by severity happens in a separate pass, not during the review.
+- Match written documents to what the task needs — no filler sections, boilerplate, or redundant summaries. Lead every summary with the outcome.
+
 **Human sign-off gates** — nothing lands on these without explicit approval: `CONTEXT.md` term changes; new or changed ADRs; acceptance spec changes; snapshot schema semantics; perceptual checklist growth; gameplay balance/feel decisions; changes to this file or the project skills.
 
 ## Agent skills
