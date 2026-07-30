@@ -388,6 +388,12 @@ EOF
     grep -aoE "$LOG_PREFIX\|.*" "$SERVER_LOG" | sed "s/^$LOG_PREFIX|//; s/\"$//" >"$OUT/spike-lines.txt"
     log "--- in-mission results ---"
     cat "$OUT/spike-lines.txt" >&2
+    # Hold mode used to exit here, before the assertion check below — so a run
+    # in which an in-mission assertion fired still reported HOLD-COMPLETE. An
+    # untyped green is worse than an untyped red: it is a pass nobody earned.
+    if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
+        fail "assertion_failed" "$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
+    fi
     record "verdict" "HOLD-COMPLETE"
     log "results: $RESULTS"
     exit 0
