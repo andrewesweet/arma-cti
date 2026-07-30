@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR-0004 and ADR-0005 amended with measured constraints: the shim keeps one persistent TCP
   connection (~3× faster than per-call connects), and nothing in the Command Port may require
   sub-frame push latency, because `ExtensionCallback` is frame-bound at 8–17 ms.
+- ADR-0004, ADR-0005 and ADR-0006 amended with engine limits found by cross-referencing phase 0
+  against the full wiki snapshot: a `callExtension` return is capped at 10,240 bytes (chunking
+  needed before snapshot save/load), a blocking call stalls the frame and warns at 1000 ms, the
+  callback path drains at most 100 messages per frame and is at-most-once across mission
+  boundaries, and 2.22 changes the extension error surface — prime `engine_drift` suspect on
+  update.
 
 - `just` command table in `CLAUDE.md` now lists the recipes that exist; the acceptance tiers are
   marked as Phase 1 work.
