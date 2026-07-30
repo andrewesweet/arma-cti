@@ -145,6 +145,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR-0004 and ADR-0005 amended with measured constraints: the shim keeps one persistent TCP
   connection (~3× faster than per-call connects), and nothing in the Command Port may require
   sub-frame push latency, because `ExtensionCallback` is frame-bound at 8–17 ms.
+- ADR-0005 and ADR-0008 amended with the Observation's delivery decision: the strategic picture is
+  pull-only on the synchronous path, because an Observation is *state* — losing one costs nothing,
+  since the next report supersedes it — where an effect is an *event* and must ride the outbox's
+  acknowledgement and replay. Consequences recorded: the daemon can never volunteer a picture, so
+  freshness is the report interval; the whole picture must fit one 10,240-byte return; and delta
+  observations are rejected, because a delta is an event and would drag the callback path back in.
+  ADR-0008 records that the Observation is the snapshot's set minus the save-only fields, so a
+  planner is tested against the schema that survives a resume.
 - ADR-0004, ADR-0005 and ADR-0006 amended with engine limits found by cross-referencing phase 0
   against the full wiki snapshot: a `callExtension` return is capped at 10,240 bytes (chunking
   needed before snapshot save/load), a blocking call stalls the frame and warns at 1000 ms, the
