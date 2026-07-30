@@ -1,0 +1,16 @@
+[package]
+name = "cti_shim"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[lib]
+name = "cti_shim"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+arma-rs = "1.12.1"
+
+[profile.release]
+strip = true

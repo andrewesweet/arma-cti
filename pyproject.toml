@@ -1,0 +1,70 @@
+[project]
+name = "cti-daemon"
+version = "0.1.0"
+description = "arma-cti Python daemon: AI Commander planner and snapshot persistence (ADR-0004)."
+requires-python = ">=3.13,<3.14"
+dependencies = ["networkx>=3.5"]
+
+[project.scripts]
+cti-stub-daemon = "cti_daemon.stub:main"
+
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+  "pytest>=9.1",
+  "hypothesis>=6.163",
+  "coverage>=7.15",
+  "mutmut>=3.6",
+  "ruff>=0.16",
+  "ty==0.0.65", # pre-1.0 and moving fast: pin exactly, bump deliberately
+]
+
+[tool.uv.build-backend]
+module-root = "src"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812", # trailing-comma rule fights the formatter
+  "CPY001", # personal project, no copyright-header convention
+  "D203",   # mutually exclusive with D211
+  "D213",   # mutually exclusive with D212
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+  "S101",    # asserts are the point of a test
+  "PLR2004", # magic values are fine in expectations
+  "D103",    # the test name is the docstring
+  "INP001",  # pytest rootdir layout deliberately has no __init__.py
+]
+# Standalone build tools, run as scripts rather than imported.
+"tools/*.py" = ["INP001"]
+# Claude Code hooks: single-purpose scripts on a stdin/stderr/exit-code contract.
+".claude/hooks/*.py" = [
+  "T201",     # stdout/stderr text IS the hook's output channel
+  "S603",     # the formatter argv is built from a fixed allow-list
+  "S607",     # formatters are resolved off PATH on purpose
+  "PLW1510",  # a formatter's exit code is deliberately ignored
+  "S110",     # a failing formatter must never block the edit
+  "BLE001",   # ditto: any formatter exception is swallowed by design
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+xfail_strict = true
+
+[tool.coverage.run]
+branch = true
+source = ["src/cti_daemon"]
+
+[tool.ty.src]
+include = ["src", "tests"]

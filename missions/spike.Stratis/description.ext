@@ -1,0 +1,21 @@
+// Phase-0 spike mission: the smallest thing that boots on Stratis and exercises the shim.
+briefingName = "arma-cti phase-0 spike";
+onLoadName = "arma-cti phase-0 spike";
+author = "arma-cti";
+
+class Header
+{
+    gameType = "Coop";
+    minPlayers = 1;
+    maxPlayers = 2; // must equal the playable roles in mission.sqm (1 rifleman + 1 HC)
+};
+
+briefing = 0;
+debriefing = 0;
+
+respawn = "BASE";
+respawnDelay = 5;
+respawnDialog = 0;
+disabledAI = 1;
+joinUnassigned = 1;
+enableDebugConsole = 1;

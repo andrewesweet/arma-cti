@@ -1,1 +1,26 @@
 docs/handoffs/
+
+# HEMTT
+.hemttout/
+.hemtt/local.toml
+releases/
+*.pbo
+.hemttprivatekey
+.biprivatekey
+
+# Rust
+extension/target/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.mutmut-cache
+mutants/
+
+# Spike output
+.spike-out/

@@ -1,0 +1,13 @@
+name = "Arma CTI"
+prefix = "cti"
+author = "Andrew Sweet"
+
+[version]
+path = "addons/main/script_version.hpp"
+git_hash = 0
+
+[lints.sqf.banned_commands]
+severity = "Error"
+# ADR/CLAUDE.md contract: no bare `random`, no bare `sleep` in SQF.
+# Seeded PRNG and CBA scheduler adapters only.
+options.banned = ["random", "sleep", "uiSleep"]
