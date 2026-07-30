@@ -4,4 +4,6 @@ The AI Commander planner runs outside the game process, in the Python daemon, re
 
 Consequence: the Command Port has one wire format consumed identically by the human UI (SQF side) and the AI planner (Python side) — commander symmetry is enforced by construction. The extension must support bidirectional runtime RPC during play, not just save/load.
 
+Latency constraint (2026-07-30, phase-0 measurements, docs/spikes/0001-phase0.md §4): `callExtension` costs 0.5 µs and a daemon round trip 0.2–0.65 ms, but `ExtensionCallback` — the only push path from daemon to game — is frame-bound at 8–17 ms p50 regardless of daemon speed. Nothing in the Command Port design may require sub-frame push latency. Orders, the 60 s income tick and decision traces all fit comfortably; anything per-frame lives SQF-side or is pulled synchronously via `callExtension`.
+
 The game-AI ecosystem reinforces Python: HTN planning (GTPyhop), behaviour trees (py_trees), graph reasoning (networkx), assignment optimisation (OR-tools) all have their best tooling there. MVP planner is a seeded deterministic utility scorer over the Objective adjacency graph; HTN is the escalation path. An LLM-as-commander experiment is deliberately post-MVP (nondeterministic, property-untestable) but the planner interface and decision-trace telemetry accommodate it unchanged.
