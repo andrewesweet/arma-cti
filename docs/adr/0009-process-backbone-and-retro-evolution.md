@@ -1,0 +1,5 @@
+# Matt Pocock skill suite as process backbone; process evolves only via retro
+
+Development process is encoded in three layers: a lean `CLAUDE.md` standing contract (commands, failure classes, sign-off gates, model-role convention: fable[1m] plans at high effort, opus[1m] executes at xhigh effort; opus may delegate to sonnet/haiku subagents and chooses their effort freely); the globally installed Matt Pocock engineering skills as the workflow backbone (`implement`/`tdd`/`code-review`, `research`, `prototype`, `diagnosing-bugs`, `handoff`, `to-spec`/`to-tickets`/`triage` against GitHub Issues on this repo); and three project-owned custom skills (`playtest-brief`, `playtest-ingest`, `retro`).
+
+Everything written before first practical use is marked `Status: unproven`. Process changes happen only through `retro` (run after every phase and every playtest ingest), are sign-off gated, and are journalled in `docs/process-log.md`. Retro may amend only project-owned surfaces — `CLAUDE.md`, custom skills, process log — never the shared global skills.
