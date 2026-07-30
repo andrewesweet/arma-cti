@@ -109,13 +109,14 @@ class Mission
 			{
 				position[]={1710.5,5.5,5660.5};
 			};
+			// The BI wiki: "Don't forget to set NAME property, it is necessary for
+			// the Headless Client to work correctly." Shape copied from KP
+			// Liberation's working entity: name at item level, not in Attributes.
+			name="HC1";
 			isPlayable=1;
 			id=3;
 			type="HeadlessClient_F";
 			atlOffset=0;
-			class CustomAttributes
-			{
-			};
 		};
 		class Item2
 		{

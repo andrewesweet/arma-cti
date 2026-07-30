@@ -1,0 +1,453 @@
+// source: https://community.bistudio.com/wiki/Multiplayer_Server_Commands
+// revision: 373679 (2025-06-11T15:21:39Z)
+// export sha1: g38fx1mkpixnfz3r5ujm8iz2pqi2cvq
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|armaR|For {{armaR}} see [[Arma Reforger:Server Management]].}}
+
+
+{{Feature|important|
+It is recommended to use [[BattlEye#RCon|BattlEye's RCon]] tool to administrate the server.<br>
+RCON cannot be affected by in-game script exploits.<br>
+It uses custom port which one may easily secure by firewall rules!
+}}
+
+
+== How To ==
+
+You can access the command line '''by pressing the chat key''' (default {{Controls|/}}).
+
+In the chat input window you can type any of the following commands in and confirm them with the enter key.
+
+You '''have''' to add the {{hl|#}} character before the command.
+
+The commands can be used in SQF scripts by using [[serverCommand]].
+
+{{Feature|informative|
+'''Troubleshooting''':<br>
+Some commands are confirmed via a message in the console.<br>
+If you enter a command that is properly formatted, and you see no confirmation of the command, then an error may have occurred.<br>
+Check your [[Crash_Files|server log]] for potentially more information why it failed (e.g. one or more of your mission files is corrupt or has an error which prevents the Missions Lobby from loading, or may prevent other commands like #restart or #reassign from executing).
+}}
+
+
+== Commands ==
+
+The following commands are available to you once you have connected to a server:
+
+=== Admin Commands ===
+
+==== Server/Session Administration ====
+{| class="wikitable"
+! Command !! Example !! Description
+|-
+| {{hl|#login}} <br>
+{{hl|#login}} ''password''<br>
+| {{hl|#login}}  <br>
+{{hl|#login adminPW}}  <br>
+| Log in as the admin. Without password only possible if you are listed as an admin[] in [[Arma 3: Server Config File#Server_Options]]
+|-
+| {{hl|#logout}}
+|
+| Admin log out.
+|-
+|{{hl|#mission}} ''filename''<br>
+{{hl|#mission}}&nbsp;''filename''&nbsp;''difficulty''
+|{{hl|#mission&nbsp;myDM.intro}}<br>
+{{hl|#mission&nbsp;myDM.intro&nbsp;Veteran}}
+| Select mission with known name and set the difficulty. Difficulty parameter is optional and if not set, current difficulty is kept.
+|-
+| {{hl|#missions}}
+| 
+| Allows selection of mission on shown list of available missions (all or those inside missionWhiteList[] = {}; within server.cfg). <br> Note: this will trigger `missionEnd` (so if server.cfg is set with e.g. MissionsToServerRestart or MissionsToShutdown threshold, the server may immediately restart/shutdown)
+|-
+| {{hl|#restart}}
+| 
+| Restart mission.
+|-
+| {{hl|#reassign}}
+| 
+| Start over and reassign roles.
+|-
+| {{hl|#lock}}
+| Locks the server, prevents new clients from joining.
+|-
+| {{hl|#unlock}}
+| Unlocks the server, allows new clients to join.
+|-
+| {{hl|#shutdown}}
+| 
+| Shuts down the server immediately
+|-
+| {{hl|#restartserver}}
+| 
+| {{GVI|arma3|1.66}} Shuts down and restarts the server immediately
+|-
+| {{hl|#shutdownaftermission}}
+| 
+| {{GVI|arma3|1.72}} Shuts down the server after mission ends
+|-
+| {{hl|#restartserveraftermission}}
+| 
+| {{GVI|arma3|1.72}} Shuts down and restarts the server after mission ends
+|-
+| {{hl|#init}}
+| 
+| Reload server config file loaded by {{hl|[[:Category:Startup Parameters|-config]]}} option.
+|}
+
+{{ArgTitle|4|Player Punishment|{{GVI|arma1|1.00}}}}
+{{hl|#exec}} ''[[ArmA: Armed Assault: Server Side Scripting|server side command]]'' allows executing administration scripting command.
+
+{{Feature|important|Only works on '''dedicated''' servers.}}
+
+{| class="wikitable"
+! Command !! Example !! Description
+|-
+|{{hl|#exec ban}} ''name''<br>
+{{hl|#exec ban}} ''ID''<br>
+{{hl|#exec ban}} ''Player#''<br>
+{{hl|#exec ban "user reason"}}
+|{{hl|#exec ban nickName}}<br>
+{{hl|#exec ban 47114712}}<br>
+{{hl|#exec ban 3}}<br>
+{{hl|#exec ban "3 Griefing"}}<br>
+{{GVI|arma3|2.18|size=0.75}} {{hl|#exec ban """Some Username""" ""Some Ban Reason Text"""}}
+| Allows you to ban a player. Their ID will be added to the {{hl|ban.txt}} file.
+|-
+| {{hl|#kick}} ''name''<br>
+{{hl|#kick}} ''ID''<br>
+{{hl|#kick}} ''Player#''<br>
+{{hl|#kick user reason}}
+| {{hl|#kick nickName}}<br>
+{{hl|#kick 47114712}}<br>
+{{hl|#kick 3}}<br>
+{{GVI|arma3|2.18|size=0.75}} {{hl|#kick "Some Username" "Some Kick Reason Text"}}
+| Allows you to kick a player.
+|}
+
+==== Network/Connection Quality ====
+{| class="wikitable"
+! Command !! Example !! Description
+|-
+| {{hl|#maxdesync}} ''(amount in %)''
+| {{hl|#maxdesync 95}}
+| Set the maximum accepted desynchronisation <br>
+Desync is the value you can also see on the map screen when clicking on a player. Or get from ''networkInfo'' by [[getUserInfo]]. <br>
+Unclear if percent value or number. The max value seems to be 100000. <br>
+Note the relation to "yellow chain" and "red chain". 2000 triggers yellow chain. 20000 triggers red chain. <br>
+|-
+| {{hl|#maxpacketloss}} ''(amount in %)''
+| {{hl|#maxpacketloss 50}}
+| Set the maximum accepted packet loss
+|-
+| {{hl|#maxping}} ''(time in ms)''
+| {{hl|#maxping 250}}
+| Set the maximum accepted ping
+|-
+| {{hl|#dctimeout}} ''(time in sec)''
+| {{hl|#dctimeout 60}}
+| Set the disconnect timeout
+|}
+
+==== Monitoring/Analysis ====
+{| class="wikitable"
+! Command !! Example !! Description
+|-
+| {{hl|#monitor}} ''(interval in sec)''
+| {{hl|#monitor 1}}
+| Shows performance information of the server. Interval {{hl|0}} means to stop monitoring.
+
+{| class="wikitable"
+|+ Values description
+! colspan="2" | Traffic
+|-
+| G
+| Guaranteed messages
+|-
+| NG
+| Non-Guaranteed messages
+|-
+! colspan="2" | Player info
+|-
+| L
+| lobby
+|-
+| R
+| role selection
+|-
+| B
+| briefing
+|-
+| G
+| in-game
+|-
+| D
+| debriefing 
+|}
+|-
+| {{hl|#monitords}} ''(interval in sec)''
+| {{hl|#monitords 1}}
+| {{GVI|arma3|1.64}} Shows performance information in the dedicated server console. Interval {{hl|0}} means to stop monitoring.
+|-
+| {{hl|#debug}} ''(interval in sec)''
+| {{hl|#debug 30}}
+| Default interval is {{hl|10}} seconds.
+|-
+| {{hl|#debug on}} ''(command)''
+|{{hl|#debug on Console}}<br>
+{{hl|#debug on TotalSent}}<br>
+{{hl|#debug on UserSent}}<br>
+{{hl|#debug on UserInfo}}<br>
+{{hl|#debug on UserQueue}}<br>
+{{hl|#debug on JIPQueue}}<br>
+| The available commands are:<br>
+: {{hl|Console}} - All server console prints, are forwarded to your client. Send to submitter what's on server console. Works as ''DebugAnswer'' for all writes into the console.
+: {{hl|TotalSent}} - Every debug interval, tells you the bits per second, msg per second. Send/Receive for the whole server
+: {{hl|UserSent}} - Every debug interval, tells you the bits per second, messages per second. Send/Receive statistics for every player
+: {{hl|UserInfo}} - Every debug interval, some statistics, for every player
+: {{hl|UserQueue}} - Every debug interval, Info about how many bytes/messages are currently queued up, per player
+: {{hl|JIPQueue}} - Every debug interval, the number of messages in JIP queue's
+Each command can be disabled by the use of the {{hl|off}} parameter ''e.g.'' {{hl|#debug off UserSent}}<br>
+Each command differs a bit - some output to screen, some to log file etc.<br>
+See below for example output.<br>
+<br>
+You need some debugger capable of catching ''OutputDebugString'' running on the client machine.<br>
+A very small and easy to use called '''DebugView''' is available on the ''SysInternals'' website.<br>
+You launch this debugger, then launch ARMA client, connect to the server, and issue any of the commands.
+|-
+| {{hl|#debug off <OPTION>}}
+| {{hl|#debug off TotalSent}}
+| Disables the specific debugging <OPTION>. See available options above.
+|-
+| {{hl|#debug off}}
+| {{hl|#debug off}}
+| Disables all debugging options.
+|-
+| {{hl|#debug checkFile}} ''(PATH\TO\FILE.PBO)''
+| {{hl|#debug checkFile Expansion\Dta\ui.pbo}}
+| Trigger integrity check on filename.
+|-
+| {{hl|#debug von}} 
+| {{hl|#debug von}}
+| Triggers VoN debug mode. Outputs into ''logFile'' defined in [[Arma 3: Server Config File|server config]] as ''e.g.'' {{hl|c= logFile = "server_console.log";}}. See below for example output.
+|-
+| {{hl|#debug limitOut}} ''bitsPerSecond''
+| {{hl|#debug limitOut 100000}}
+| Change bandwidth limit (in bits per second). Must be larger than 0. You get response message: "Outgoing bandwidth limited to %d B/s (%d bps) per client".
+|-
+| {{hl|#exportJIPqueue}}
+|
+| Creates a log file containing an overview on all JIP (network) messages currently in the JIP queue. See [[exportJIPMessages]] for more info.
+|}
+
+==== Performance Profiling ====
+{| class="wikitable"
+! Command !! Example !! Description
+|-
+| {{GVI|arma3|prof}} {{hl|#captureframe}}
+| 
+| The current frame '''on the server''' is captured and written to a log file in the same directory as the [[Crash_Files|.rpt file]]. See [[diag_captureFrameToFile]] for more info. <br>
+{{Feature|informative|
+Until 2.20 {{GVI|arma3|prof}} on client was required to trigger {{hl|#captureFrame}} on server. Starting with {{GVI|arma3|2.20}} they can mismatch.
+You can trigger {{hl|#captureFrame}} on a {{GVI|arma3|prof}} server (always required), coming from a {{GVI|arma3|perf}} client for example.
+}}
+|-
+| {{GVI|arma3|prof}} {{hl|#captureslowframe}} ''scope, threshold, frameOffset, numberOfSlowFrames to capture''
+| style="width:300px;" | {{hl|#captureSlowFrame sLoop 0 0 0}} <br>
+{{hl|#captureSlowFrame sLoop 0.033 0 1}} <br>
+{{hl|#captureSlowFrame sLoop 33ms}} <br>
+{{hl|#captureSlowFrame sLoop 30fps}}
+| Captures the current frame '''on the server''' if it exceeds the set threshold in seconds and get written to a log file in the same directory as the [[Crash_Files|.rpt file]].<br>
+Note: {{hl|#captureSlowFrame sLoop 0.033 0 1}} equals to {{hl|diag_captureSlowFrame ['sLoop', 0.033]}}. See [[diag_captureSlowFrame]] for more info.
+|-
+| {{GVI|arma3|diag}} {{GVI|arma3|prof}} {{hl|#logEntities}}
+| 
+| Creates a log file containing the list of all game entities in scene. See [[logEntities]] for more info.
+|-
+| {{GVI|arma3|2.20}} {{GVI|arma3|diag}} {{GVI|arma3|prof}} {{hl|#logremains}}
+|
+| Log remains collector entities into a file in the [[arma.RPT|RPT]] directory. See also <sqf inline>diag_remainsCollector -1</sqf> and the {{hl|{{Link|Multiplayer Server Commands#Performance Profiling|#logremains}}}} server command.
+|-
+| {{hl|#debug jipPerf}} 
+| {{hl|#debug jipPerf}}
+| Dumps the JIP queue in your client's chat. It might also print to client/server RPT? (TBC). It is the top part of what [[exportJIPMessages]] does.
+|}
+
+=== Samples ===
+
+==== "#debug von" ====
+'''server_console.log'''
+
+<spoiler text="Show example output">
+<pre>
+*** VoN Topology Diagnostics ((***
+=Player=: #2
+P2PManager: Time: 13:38:48 waiting edges: 0, active negotiations: 0
+Matrix:
+  3056006: #2
+  #2: 3056006
+Cliques:
+  3056006,#2
+Version: 1.60.86277
+Private: 192.168.178.21
+Connections:
+  3056006: Direct P2P, 5 KA, snd: 10 sec, rcv: 10 sec, (192.168.178.21:2317) snd=0 rcv=0(0) Repl(-5,0,0)
+Cliques:
+  3056006,Unknown
+=Player=: 3056006
+Version: 1.60.86277
+Private: 192.168.178.21
+Public: 77.4.35.154
+Connections:
+  #2: Direct P2P, 5 KA, snd: 10 sec, rcv: 10 sec, (192.168.178.21:2305) snd=0 rcv=0(0) Repl(-5,0,0)
+Cliques:
+  3056006,Unknown
+*** VoN Topology Diagnostics ))***
+</pre>
+</spoiler>
+
+==== "#debug on <OPTION>" ====
+'''DebugView'''
+
+<spoiler text="Show example output">
+<pre>
+#debug on TotalSent
+// Send/Receive for the whole server. bps = Bits per second. Msgps = messages per second.
+** Total: sent 1447 bps (2.10 Msgps), received 3788 bps (6.10 Msgps)
+
+#debug on UserSent
+// Send/Receive statistics for every player. bps = Bits per second. Msgps = messages per second.
+playerName: sent 1531 bps (2.30 Msgps), received 1259 bps (1.70 Msgps)
+
+#debug on UserInfo
+// Some statistics for every player.
+__SERVER__: Info Unknown player ID = 2
+playerName: Info ping   0ms(   0,   1) BWfee  286Kb(   3, 204,   3) lost22.2%%(  2) queue   0B(   0) ackWait  0(0.0,0.0)
+
+#debug on UserQueue
+// Info about how many bytes/messages are currently queued up for every player.
+__SERVER__: Queue 0 B (0) 0 B Guaranteed (0), Desync 0
+playerName: Queue 0 B (0) 222 B Guaranteed (3), Desync 0
+
+This is monitoring data. This should be how many bytes were sent recently.
+In parenthesis is the number of messages sitting in queue.
+BE is for BattlEye - BE has its own messaging.
+
+#debug on JIPQueue
+// The total number of messages in JIP queue. As well as amount per message type.
+AddInitAndRemoveOverridden  statistics ... total messages = 2543
+110 ... Type_10
+45 ... Type_31
+57 ... Type_53
+193 ... Type_54
+11 ... Type_56
+11 ... Type_57
+52 ... Type_59
+11 ... Type_60
+562 ... Type_64
+5 ... Type_65
+11 ... Type_183
+10 ... Type_187
+422 ... Type_248
+167 ... Type_272
+34 ... Type_273
+1 ... Type_274
+652 ... Type_291
+1 ... Type_295
+5 ... Type_296
+5 ... Type_307
+2 ... Type_308
+10 ... Type_324
+2 ... Type_328
+2 ... Type_329
+2 ... Type_330
+73 ... Type_337
+35 ... Type_360
+10 ... Type_364
+1 ... Type
+</pre>
+</spoiler>
+
+=== Player Commands ===
+
+{| class="wikitable"
+! Command!! Example !! Description
+|-
+| {{hl|#vote missions}}
+|
+| Users can vote for the mission selection.
+|-
+| {{hl|#vote mission}} ''(name)''
+| {{hl|#vote mission myD.intro}}
+| Users can vote on a particular mission to loaded.
+|-
+| {{hl|#vote admin}} ''(name/ID/PLR#)''
+|{{hl|#vote admin nickName}}<br>
+{{hl|#vote admin 47114712}}<br>
+{{hl|#vote admin 3}}
+| Users can vote an admin to control the server.
+|-
+| {{hl|#vote kick}} ''(name, ID or Player#)''
+| {{hl|#vote kick nickName}}<br>
+{{hl|#vote kick 47114712}}<br>
+{{hl|#vote kick 3}}
+| Users can vote to kick off an individual.
+|-
+| {{hl|#vote restart}}
+|
+| Vote to restart the mission.
+|-
+| {{hl|#vote reassign}}
+|
+| Vote to reassign.
+|-
+| {{hl|#userlist}}
+|
+| Displays the list of users on the server (use ''PgUp'' to scroll up).
+|}
+
+=== BattlEye commands ===
+
+{| class="wikitable"
+! Command !! Description
+|-
+| {{hl|#beclient players}}
+| Displays the list of ''GUID's'' of all players on the server.
+|-
+| {{hl|#beclient guid}}
+| Show your own ''GUID''.
+|}
+
+=== {{arma3}} #exec Notes ===
+
+{{Feature|arma3|See [[Arma 3: Server Side Scripting]].}}
+
+In {{arma3}} '''#exec kick''' and '''#exec ban''' commands require quotes (string) for ''Name'', ''UID'' or ''Player#''. To do this for the UID or Player#, use [[format]] command to turn the user ID into a string.
+
+<pre>
+#exec kick "5"
+#exec ban "imah4x0r"
+#exec kick "938679499494"
+</pre>
+
+'''#kick''' command can still be used either way:
+
+<pre>
+#kick imah4x0r
+#kick "imah4x0r"
+</pre>
+
+In case of banning, a ''ban.txt'' file containing a list of banned UIDs is created in {{arma3}}'s root directory. To unban a user by UID (UID is the only option) or to clear the ''ban.txt'':
+<pre>
+#exec unban "98749837498374"
+#exec clearbans
+</pre>
+
+
+[[Category:Multiplayer Hints and Tips]]
+{{GameCategory|ofp|Multiplayer}}
+{{GameCategory|arma1|Multiplayer}}
+{{GameCategory|arma2|Multiplayer}}
+{{GameCategory|arma3|Multiplayer}}

@@ -17,5 +17,6 @@ respawn = "BASE";
 respawnDelay = 5;
 respawnDialog = 0;
 disabledAI = 1;
-joinUnassigned = 1;
+// Reads backwards: 0 *forces* role assignment, 1 leaves the client unassigned.
+joinUnassigned = 0;
 enableDebugConsole = 1;

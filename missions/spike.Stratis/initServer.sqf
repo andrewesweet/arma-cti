@@ -108,10 +108,30 @@ if (count cti_spike_latencies < _callbacks) then {
 // ---------------------------------------------------------------- headless client
 // The harness starts the HC once it sees mission_running above, so wait for it
 // here rather than sampling an empty server.
+// `allUsers` lists connection-level users even while `allPlayers` is empty, and
+// `getUserInfo` index 6 is the client state, 7 the headless flag — so this says
+// which rung a stuck client is actually on instead of leaving us to guess.
+CTI_SPIKE_USERS = {
+    if (isNil "allUsers") exitWith { "allUsers unavailable" };
+    private _out = [];
+    {
+        private _info = if (isNil "getUserInfo") then { ["getUserInfo unavailable"] } else {
+            getUserInfo _x
+        };
+        _out pushBack _info;
+    } forEach allUsers;
+    str _out
+};
+
 private _hcDeadline = diag_tickTime + 60;
 private _hcSeenAt = -1;
+private _nextProbe = 0;
 waitUntil {
     if (!isNil "cti_spike_hc_online" && {_hcSeenAt < 0}) then { _hcSeenAt = diag_tickTime };
+    if (diag_tickTime > _nextProbe) then {
+        _nextProbe = diag_tickTime + 10;
+        ("users " + ([] call CTI_SPIKE_USERS)) call CTI_SPIKE_LOG;
+    };
     (_hcSeenAt > 0) || (diag_tickTime > _hcDeadline)
 };
 (format ["hc_online=%1 hc_owner=%2 seen_at=%3 hc_entities=%4 allplayers=%5",
