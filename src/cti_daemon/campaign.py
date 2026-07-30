@@ -62,12 +62,20 @@ class Campaign:
         """Every Objective's owner, for a Commander to reason over."""
         return {name: state.owner for name, state in self._states.items()}
 
-    def observe(self, at_time: float, presence: dict[str, list[str]]) -> None:
+    def funds(self) -> dict[str, int]:
+        """Return what each side holds, for a Commander and for the UI."""
+        return {side: self.ledger.balance(side) for side in SIDES}
+
+    def observe(self, at_time: float, presence: dict[str, list[str]]) -> list[dict[str, int]]:
         """Take one report of who is standing where, at an in-game time.
 
         `presence` maps Objective id to the sides inside its capture radius.
         An Objective the report omits is treated as empty, which is what an
         empty radius looks like from the world.
+
+        Returns one entry per income tick the elapsed time covered, so a caller
+        can record that Funds moved. Paying in silence would leave the economy
+        the one part of the campaign nobody can watch.
         """
         # In-game time restarts at zero when the mission does. A negative
         # interval would claw back Funds already paid, so a step backwards is a
@@ -80,7 +88,7 @@ class Campaign:
         for name, state in self._states.items():
             self._advance(name, state, presence.get(name, []), interval)
 
-        self._accrue(interval)
+        return self._accrue(interval)
 
     def _advance(self, name: str, state: ObjectiveState, sides: list[str], interval: float) -> None:
         """Move one Objective's capture on by `interval` seconds."""
@@ -128,15 +136,17 @@ class Campaign:
             )
         )
 
-    def _accrue(self, interval: float) -> None:
+    def _accrue(self, interval: float) -> list[dict[str, int]]:
         """Pay every income tick the elapsed time covers."""
+        paid: list[dict[str, int]] = []
         self._since_payout += interval
         tick = self.table.income_tick_seconds
         while self._since_payout >= tick:
             self._since_payout -= tick
-            self._pay()
+            paid.append(self._pay())
+        return paid
 
-    def _pay(self) -> None:
+    def _pay(self) -> dict[str, int]:
         """One tick: the sum over owned Objectives, plus the flat stipend."""
         income = dict.fromkeys(SIDES, self.table.stipend)
         for objective in self.map_manifest.objectives:
@@ -146,3 +156,4 @@ class Campaign:
                 income[owner] += objective.income
         for side, amount in income.items():
             self.ledger.deposit(side, amount)
+        return income

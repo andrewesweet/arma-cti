@@ -55,6 +55,10 @@ if (isNil "cti_fnc_worldInit") then {
         // both Commanders alike. Started after the world is built because an
         // effect has nowhere to land until the Bases exist.
         [] call cti_fnc_effectPump;
+
+        // The world reports who is standing where; the daemon decides what
+        // that means and pays for it.
+        [] call cti_fnc_presenceReport;
     };
 };
 

@@ -51,6 +51,9 @@ class CfgFunctions
             class portReply {};
             class effectApply {};
             class effectPump {};
+            class presenceSample {};
+            class presenceReport {};
+            class objectiveOwnerSet {};
         };
 
         // Written by tools/generate_manifest_sqf.py from manifests/*.json.

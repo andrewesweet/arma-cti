@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon import commands, economy, protocol
+from cti_daemon import campaign, commands, economy, manifest, protocol
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
@@ -15,18 +15,35 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 DEFAULT_ECONOMY = Path(__file__).parents[2] / "config" / "economy.json"
+DEFAULT_MANIFESTS = Path(__file__).parents[2] / "manifests"
+DEFAULT_MAP = "stratis"
 
 
 class Daemon:
     """Dispatches requests and owns the outbox the game reads from."""
 
-    def __init__(self, *, telemetry_path: Path, economy_path: Path | None = None) -> None:
-        """Wire the daemon to its telemetry sink and the authored economy."""
+    def __init__(
+        self,
+        *,
+        telemetry_path: Path,
+        economy_path: Path | None = None,
+        manifests_path: Path | None = None,
+        map_id: str = DEFAULT_MAP,
+    ) -> None:
+        """Wire the daemon to its telemetry sink, the economy and the map."""
         self.outbox = Outbox()
         self._telemetry = Telemetry(telemetry_path)
         table = economy.load(economy_path or DEFAULT_ECONOMY)
-        self.port = CommandPort(
-            table=table, ledger=economy.Ledger(table.starting_funds), outbox=self.outbox
+        ledger = economy.Ledger(table.starting_funds)
+        self.port = CommandPort(table=table, ledger=ledger, outbox=self.outbox)
+        # One ledger, shared: Funds spent through the port and Funds earned from
+        # Objectives are the same Funds, and a second ledger would be a second
+        # answer to how much a side has.
+        self.campaign = campaign.Campaign(
+            map_manifest=manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id],
+            table=table,
+            ledger=ledger,
+            outbox=self.outbox,
         )
 
     def handle_line(self, line: str) -> str:
@@ -77,11 +94,37 @@ class Daemon:
             "poll": self._poll,
             "ack": self._ack,
             "command": self._command,
+            "observe": self._observe,
         }
 
     def _ping(self, request: protocol.Request) -> protocol.Reply:
         result: dict[str, Any] = {"pong": True}
         return protocol.accepted(request.id, result)
+
+    def _observe(self, request: protocol.Request) -> protocol.Reply:
+        """Take one report of what the world can see (ADR-0012's `observe`).
+
+        A transport verb rather than a Command: nobody is instructing anything,
+        the world is saying what is true. #15 grows this into the full
+        observation feed; #13 needs only presence.
+        """
+        at_time = request.payload.get("time")
+        if not isinstance(at_time, (int, float)) or isinstance(at_time, bool):
+            detail = "`time` must be the in-game time in seconds"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        presence = request.payload.get("presence", {})
+        if not isinstance(presence, dict):
+            detail = "`presence` must map Objective ids to the sides present"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        paid = self.campaign.observe(float(at_time), presence)
+        for payout in paid:
+            self._telemetry.record("income", at=at_time, paid=payout)
+        return protocol.accepted(
+            request.id,
+            {"owners": self.campaign.owners(), "funds": self.campaign.funds(), "paid": paid},
+        )
 
     def _command(self, request: protocol.Request) -> protocol.Reply:
         """Carry one Command to the port and return its judgement (ADR-0012)."""

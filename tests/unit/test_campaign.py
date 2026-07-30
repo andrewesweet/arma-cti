@@ -143,3 +143,15 @@ def test_time_going_backwards_is_a_new_session_rather_than_a_refund(
     paid = live.ledger.balance("WEST")
     live.observe(5, {})
     assert live.ledger.balance("WEST") == paid
+
+
+def test_a_payout_is_reported_so_the_economy_can_be_watched(live: campaign.Campaign) -> None:
+    # Paying in silence would leave the economy the one part of the campaign
+    # nobody can observe.
+    hold(live, "agia_marina", ["WEST"], 30)
+    paid = live.observe(live.elapsed + 60, {})
+    assert paid == [{"WEST": 15, "EAST": 5}]
+
+
+def test_a_report_covering_no_tick_reports_no_payout(live: campaign.Campaign) -> None:
+    assert live.observe(live.elapsed + 10, {}) == []

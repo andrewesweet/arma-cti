@@ -27,6 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport envelope, not the envelope itself. The daemon judges Commands against the Funds
   ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
   the outbox for both Commanders. `CONTEXT.md` gains **Command**.
+- Objectives change hands by presence and pay income. A side alone in the capture radius takes an
+  Objective after a held interval; both sides present makes it **Contested**, which is a real
+  state that interrupts a capture, shows its own colour on the map and pays nobody. Every 60
+  in-game seconds each side is paid the sum over the Objectives it owns plus a flat stipend, so no
+  side can be economically locked out. The rules live in the daemon and are unit-tested there; the
+  world only reports who is standing where.
+- Income accrues in in-game seconds, so it stops when the Play Session does without anything
+  having to know what a session is. A report arriving late still pays every tick it covers, and
+  time stepping backwards is a mission restart rather than a refund.
 - Command Port, in-world side: a single server-side gateway is the only function a client may
   `remoteExec`, with `CfgRemoteExec` locked to mode 1 on **both** `Functions` and `Commands` —
   a mission that locks only `Functions` leaves the whole scripting-command surface open. The

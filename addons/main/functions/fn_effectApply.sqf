@@ -21,6 +21,15 @@ private _name = _effect getOrDefault ["effect", ""];
 private _sideName = _effect getOrDefault ["side", ""];
 private _args = _effect getOrDefault ["args", createHashMap];
 
+// An Objective changing hands is announced as an effect and also reflected in
+// every observe reply. The reply is what repaints the map; this exists so a
+// capture is an event something can react to, not only a state to poll.
+if (_name isEqualTo "objective_captured") exitWith {
+    diag_log format ["CTI|effect_applied effect=%1 side=%2 objective=%3",
+        _name, _sideName, _args getOrDefault ["objective", "?"]];
+    true
+};
+
 if (_name isNotEqualTo "squad_spawned") exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed unknown_effect=%1", _name];
     false

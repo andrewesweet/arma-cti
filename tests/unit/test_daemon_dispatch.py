@@ -198,3 +198,37 @@ def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
     ]
     assert "side" in rows[0]["reason_detail"]
     assert rows[2]["reason_detail"] is None
+
+
+def test_observing_presence_moves_ownership_and_pays(tmp_path: Path) -> None:
+    # `observe` is the transport verb ADR-0012 reserved for the world telling
+    # the daemon what it can see. #15 grows it; #13 needs only presence.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="o-1",
+        verb="observe",
+        payload={"time": 30, "presence": {"agia_marina": ["WEST"]}},
+    )
+    assert reply["status"] == "ok"
+    assert reply["result"]["owners"]["agia_marina"] == "WEST"
+
+
+def test_a_capture_reaches_the_game_as_an_effect(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply_to(
+        daemon,
+        id="o-2",
+        verb="observe",
+        payload={"time": 30, "presence": {"girna": ["EAST"]}},
+    )
+    polled = reply_to(daemon, id="o-3", verb="poll")
+    effects = [entry["message"]["effect"] for entry in polled["result"]["messages"]]
+    assert "objective_captured" in effects
+
+
+def test_an_observation_without_a_time_is_refused(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(daemon, id="o-4", verb="observe", payload={"presence": {}})
+    assert reply["status"] == "error"
+    assert reply["error"]["class"] == "malformed_request"
