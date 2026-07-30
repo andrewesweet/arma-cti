@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "id": "stratis",
+  "world": "Stratis",
+  "display_name": "Stratis",
+  "bases": [
+    {
+      "id": "nato_airbase",
+      "side": "WEST",
+      "display_name": "Stratis Air Base",
+      "position": [1987.31, 5625.9],
+      "hq": "cti_hq_west",
+      "adjacent": ["agia_marina", "camp_tempest"]
+    },
+    {
+      "id": "csat_kamino",
+      "side": "EAST",
+      "display_name": "Kamino Firing Range",
+      "position": [6401.97, 5427.13],
+      "hq": "cti_hq_east",
+      "adjacent": ["camp_rogain"]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "agia_marina",
+      "display_name": "Agia Marina",
+      "position": [2915.2, 6164.52],
+      "capture_radius": 200,
+      "income": 10,
+      "adjacent": ["camp_tempest", "air_station", "lz_baldy", "camp_rogain"]
+    },
+    {
+      "id": "camp_tempest",
+      "display_name": "Camp Tempest",
+      "position": [1941.68, 3556.72],
+      "capture_radius": 121,
+      "income": 10,
+      "adjacent": ["agia_marina", "girna", "camp_maxwell"]
+    },
+    {
+      "id": "girna",
+      "display_name": "Girna",
+      "position": [1935.28, 2722.61],
+      "capture_radius": 77,
+      "income": 10,
+      "adjacent": ["camp_tempest", "camp_maxwell"]
+    },
+    {
+      "id": "camp_maxwell",
+      "display_name": "Camp Maxwell",
+      "position": [3252.96, 2984.3],
+      "capture_radius": 121,
+      "income": 10,
+      "adjacent": ["girna", "camp_tempest", "air_station"]
+    },
+    {
+      "id": "air_station",
+      "display_name": "Air Station Mike-26",
+      "position": [4278.85, 3855.6],
+      "capture_radius": 151,
+      "income": 10,
+      "adjacent": ["camp_maxwell", "old_outpost", "agia_marina"]
+    },
+    {
+      "id": "old_outpost",
+      "display_name": "Old Outpost",
+      "position": [4318.72, 4398.14],
+      "capture_radius": 121,
+      "income": 10,
+      "adjacent": ["air_station", "lz_baldy"]
+    },
+    {
+      "id": "lz_baldy",
+      "display_name": "LZ Baldy",
+      "position": [4604.3, 5284.43],
+      "capture_radius": 146,
+      "income": 10,
+      "adjacent": ["old_outpost", "camp_rogain", "agia_marina"]
+    },
+    {
+      "id": "camp_rogain",
+      "display_name": "Camp Rogain",
+      "position": [4886.45, 5948.26],
+      "capture_radius": 96,
+      "income": 10,
+      "adjacent": ["lz_baldy", "agia_marina"]
+    }
+  ]
+}

@@ -26,6 +26,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
   mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
   now loads the addon during the Arma tier.
+- Stratis map manifest: eight Objectives with stable authored IDs, capture radii and an adjacency
+  graph, plus both Bases and the HQ structure each would lose to Decapitation. Positions are the
+  engine's own, read out of `CfgWorlds`, not eyeballed off the map. Authored once as JSON, read by
+  Python directly and by SQF through a generated HashMap, so the two cannot drift.
+- Manifests are validated before they can reach a Play Session: ID shape, capture radius, income,
+  one Base per side, distinct HQ structures, and the adjacency graph the AI Commander will reason
+  over — every edge mutual, every Objective reachable from a Base. A stale generated file fails
+  `just check` as `schema_stale`.
+- Phase-1 Stratis mission, thin per ADR-0007: two Commander slots, the named `HeadlessClient_F`
+  slot, the two Base HQ structures, and nothing else. The addon builds the world from the
+  manifest — every Objective marked with its owner, Neutral at boot, both Bases visible — and
+  refuses to build at all rather than booting a half-built world.
+- The Arma tier takes a mission, a server config and a log prefix, so it can boot the Phase-1
+  world as well as the phase-0 spike. The Phase-1 server config keeps `localClient[]` to loopback:
+  the LAN address the spike config carries there is candidate cause 1 on the open desync (#8).
 - Real daemon (`cti-daemon`), replacing the phase-0 echo stub. Same transport the spike measured —
   newline-delimited JSON on TCP loopback, one connection reused across calls — with an envelope
   worth relying on: every request carries an id and every reply echoes it, and success, a

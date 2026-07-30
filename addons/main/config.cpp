@@ -40,6 +40,17 @@ class CfgFunctions
             class prngInt {};
             class prngSelect {};
             class prngSelfTest {};
+            class manifestLoad {};
+            class sideMarkerColour {};
+            class worldInit {};
+        };
+
+        // Written by tools/generate_manifest_sqf.py from manifests/*.json.
+        // Never hand-edited; `just check` fails stale output as schema_stale.
+        class generated
+        {
+            file = "cti\addons\main\generated";
+            class manifestData {};
         };
     };
 };

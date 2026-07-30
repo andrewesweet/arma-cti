@@ -1,0 +1,225 @@
+"""Map manifests: the authored world Objectives and Bases sit on.
+
+One document per map (ADR-0007: each map gets a mission plus its manifest), so
+the format carries more maps than the one authored without changing shape.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Final, NoReturn, cast
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+import networkx as nx
+
+SCHEMA_VERSION: Final = 1
+# Authored IDs are referenced from SQF, from telemetry and from a snapshot, so
+# they are held to a shape that survives all three.
+IDENTIFIER: Final = re.compile(r"[a-z][a-z0-9_]*")
+# The two playable sides. Engine side names, so SQF needs no translation table.
+SIDES: Final = ("WEST", "EAST")
+
+
+class ManifestError(Exception):
+    """The manifest is not one this project can play on."""
+
+
+@dataclass(frozen=True, slots=True)
+class Objective:
+    """A capturable point of interest with a stable authored ID."""
+
+    id: str
+    display_name: str
+    position: tuple[float, float]
+    capture_radius: float
+    income: int
+    adjacent: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class Base:
+    """A side's fixed home location and the HQ structure that can lose it."""
+
+    id: str
+    side: str
+    display_name: str
+    position: tuple[float, float]
+    hq: str
+    adjacent: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class MapManifest:
+    """One playable map."""
+
+    id: str
+    world: str
+    display_name: str
+    bases: tuple[Base, ...]
+    objectives: tuple[Objective, ...]
+
+
+def load(path: Path) -> MapManifest:
+    """Read and validate one manifest document."""
+    document: Any = json.loads(path.read_text(encoding="utf-8"))
+    return parse(document)
+
+
+def load_all(directory: Path) -> dict[str, MapManifest]:
+    """Read every manifest in a directory, keyed by map id."""
+    return {
+        manifest.id: manifest
+        for manifest in (load(path) for path in sorted(directory.glob("*.json")))
+    }
+
+
+def _refuse(detail: str) -> NoReturn:
+    """Raise the one error type callers catch."""
+    raise ManifestError(detail)
+
+
+def _check_identifier(value: object, what: str) -> None:
+    """Hold an authored ID to a shape: it outlives the position it names."""
+    if not isinstance(value, str) or not IDENTIFIER.fullmatch(value):
+        _refuse(f"{what} id must match {IDENTIFIER.pattern}, got {value!r}")
+
+
+def _check_unique(ids: list[str], what: str) -> None:
+    duplicates = sorted({name for name in ids if ids.count(name) > 1})
+    if duplicates:
+        _refuse(f"duplicate {what} id: {', '.join(duplicates)}")
+
+
+def _check_objective(objective: dict[str, Any]) -> None:
+    _check_identifier(objective.get("id"), "objective")
+    if not (
+        isinstance(objective["capture_radius"], (int, float)) and objective["capture_radius"] > 0
+    ):
+        _refuse(f"{objective['id']}: capture_radius must be positive")
+    if not (isinstance(objective["income"], int) and objective["income"] >= 0):
+        _refuse(f"{objective['id']}: income must be a whole number of Funds, not negative")
+
+
+def _check_bases(bases: list[dict[str, Any]]) -> None:
+    sides = [base["side"] for base in bases]
+    if sorted(sides) != sorted(SIDES):
+        _refuse(f"expected exactly one Base per side {sorted(SIDES)}, got {sides}")
+    headquarters = [base["hq"] for base in bases]
+    if any(not isinstance(hq, str) or not hq for hq in headquarters):
+        _refuse(
+            "every Base needs an hq structure — Decapitation has nothing to destroy without one"
+        )
+    if len(set(headquarters)) != len(headquarters):
+        _refuse(f"two Bases name the same hq structure: {headquarters}")
+
+
+def _check_adjacency_targets(holders: list[dict[str, Any]], known: set[str]) -> None:
+    """Every adjacency names a real Objective, and never its own holder."""
+    for holder in holders:
+        for neighbour in holder["adjacent"]:
+            if neighbour not in known:
+                _refuse(f"{holder['id']} is adjacent to {neighbour!r}, which is not an Objective")
+            if neighbour == holder["id"]:
+                _refuse(f"{holder['id']} is adjacent to itself")
+
+
+def _check_adjacency_is_mutual(objectives: list[dict[str, Any]], graph: nx.Graph) -> None:
+    """Refuse a front line the planner could cross one way only."""
+    for objective in objectives:
+        for neighbour in objective["adjacent"]:
+            other = next(o for o in objectives if o["id"] == neighbour)
+            if objective["id"] not in other["adjacent"]:
+                _refuse(
+                    f"one-sided adjacency: {objective['id']} lists {neighbour}, "
+                    f"but {neighbour} does not list it back"
+                )
+            graph.add_edge(objective["id"], neighbour)
+
+
+def _check_adjacency(objectives: list[dict[str, Any]], bases: list[dict[str, Any]]) -> None:
+    """Check the Objective graph the AI Commander's utility scorer reasons over.
+
+    Without it the planner has no notion of a front line, so the invariants it
+    depends on are enforced here rather than discovered mid-Campaign.
+    """
+    known = {objective["id"] for objective in objectives}
+    graph = nx.Graph()
+    graph.add_nodes_from(known)
+
+    _check_adjacency_targets([*objectives, *bases], known)
+    _check_adjacency_is_mutual(objectives, graph)
+
+    # Bases anchor the graph: an Objective reachable from neither Base is one
+    # neither side can take, so Domination could never be won on this map.
+    for base in bases:
+        graph.add_node(base["id"])
+        for neighbour in base["adjacent"]:
+            graph.add_edge(base["id"], neighbour)
+    if known and not nx.is_connected(graph):
+        stranded = sorted(known - nx.node_connected_component(graph, bases[0]["id"]))
+        _refuse(f"unreachable from {bases[0]['id']}: {', '.join(stranded)}")
+
+
+def _validate(document: object) -> dict[str, Any]:
+    """Refuse anything this project cannot play on."""
+    if not isinstance(document, dict):
+        _refuse(f"manifest must be an object, got {type(document).__name__}")
+    # Checked above; every key it must carry is checked by the rules below.
+    validated = cast("dict[str, Any]", document)
+
+    if validated.get("schema_version") != SCHEMA_VERSION:
+        _refuse(f"schema_version must be {SCHEMA_VERSION}, got {validated.get('schema_version')!r}")
+    _check_identifier(validated.get("id"), "map")
+
+    objectives: list[dict[str, Any]] = validated["objectives"]
+    _check_unique([objective["id"] for objective in objectives], "objective")
+    for objective in objectives:
+        _check_objective(objective)
+
+    bases: list[dict[str, Any]] = validated["bases"]
+    _check_unique([base["id"] for base in bases], "base")
+    _check_bases(bases)
+
+    _check_adjacency(objectives, bases)
+    return validated
+
+
+def parse(document: object) -> MapManifest:
+    """Validate a manifest document and build the map it describes."""
+    validated = _validate(document)
+    return _build(validated)
+
+
+def _build(document: dict[str, Any]) -> MapManifest:
+    """Turn a validated document into the map it describes."""
+    return MapManifest(
+        id=document["id"],
+        world=document["world"],
+        display_name=document["display_name"],
+        bases=tuple(
+            Base(
+                id=base["id"],
+                side=base["side"],
+                display_name=base["display_name"],
+                position=(base["position"][0], base["position"][1]),
+                hq=base["hq"],
+                adjacent=tuple(base["adjacent"]),
+            )
+            for base in document["bases"]
+        ),
+        objectives=tuple(
+            Objective(
+                id=objective["id"],
+                display_name=objective["display_name"],
+                position=(objective["position"][0], objective["position"][1]),
+                capture_radius=objective["capture_radius"],
+                income=objective["income"],
+                adjacent=tuple(objective["adjacent"]),
+            )
+            for objective in document["objectives"]
+        ),
+    )
