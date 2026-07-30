@@ -76,8 +76,11 @@ private _arrayUs = ((diag_tickTime - _t0) * 1e6) / _iterations;
 
 // ---------------------------------------------------------------- daemon round trip
 // Measured inside the extension: SQF's clock is too coarse for a single call.
-("bench_fresh=" + ((_ext callExtension ["bench", [50, false]]) # 0)) call CTI_SPIKE_LOG;
-("bench_keepalive=" + ((_ext callExtension ["bench", [50, true]]) # 0)) call CTI_SPIKE_LOG;
+// The shim times the round trip but does not decide what is asked, so the
+// payload is a request the daemon actually answers.
+private _benchPayload = "{""id"":""spike-bench"",""verb"":""ping""}";
+("bench_fresh=" + ((_ext callExtension ["bench", [50, false, _benchPayload]]) # 0)) call CTI_SPIKE_LOG;
+("bench_keepalive=" + ((_ext callExtension ["bench", [50, true, _benchPayload]]) # 0)) call CTI_SPIKE_LOG;
 
 // One synchronous call in the daemon's real envelope, to prove the id survives
 // the round trip: the shim's own transport errors carry no `status`, so a reply

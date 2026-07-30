@@ -102,6 +102,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The shim's round-trip benchmark was timing requests the daemon never understood: it built its
+  own payload, left over from when the daemon was an echo stub that accepted anything, and every
+  spike run left about a hundred `malformed_request` records in telemetry. The payload now comes
+  from the caller, which is also the shape ADR-0005 asks for — the shim has no business knowing
+  what the daemon accepts.
 - A headless client never entered the mission: its `HeadlessClient_F` slot had no `name`, and an
   unnamed slot is never assigned.
 - The auto-format hook ran `rustfmt` at edition 2021 against an edition 2024 crate, so it wrote

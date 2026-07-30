@@ -47,11 +47,12 @@ if (hasInterface) then {
             {
                 "cti_shim" callExtension ["addr", [_x]];
                 private _try = ("cti_shim" callExtension
-                    ["rpc_keepalive", ["{""cmd"":""echo"",""from"":""windows-client""}"]]) # 0;
+                    ["rpc_keepalive", ["{""id"":""client-probe"",""verb"":""ping""}"]]) # 0;
                 if !(_try regexMatch ".*""error"".*") exitWith {
                     _addr = _x;
                     _echo = _try;
-                    _bench = ("cti_shim" callExtension ["bench", [20, true]]) # 0;
+                    _bench = ("cti_shim" callExtension
+                        ["bench", [20, true, "{""id"":""client-bench"",""verb"":""ping""}"]]) # 0;
                 };
                 _echo = _try;
             } forEach _addrs;

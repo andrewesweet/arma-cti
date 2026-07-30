@@ -135,19 +135,24 @@ pub fn rpc_keepalive(payload: String) -> String {
 /// Time `count` round trips inside the extension and return the distribution as
 /// JSON. Keeps the measurement off SQF's frame-quantised clock; `keepalive`
 /// selects the reused connection over a fresh one per call.
-pub fn bench(count: u32, keepalive: bool) -> String {
+///
+/// The payload comes from the caller rather than being built here. The shim is
+/// domain-agnostic (ADR-0005) — it has no business knowing what the daemon
+/// accepts — and a payload the daemon answers with an error would time the
+/// round trip of a request nothing understood.
+pub fn bench(count: u32, keepalive: bool, payload: String) -> String {
     if count == 0 {
         return error_json("count must be > 0");
     }
     let mut micros: Vec<u128> = Vec::with_capacity(count as usize);
     for i in 0..count {
-        let payload = format!(r#"{{"cmd":"bench","n":{i}}}"#);
         let started = std::time::Instant::now();
         let outcome = if keepalive {
             round_trip_persistent(&payload)
         } else {
             round_trip_fresh(&payload)
         };
+
         let elapsed = started.elapsed().as_micros();
         match outcome {
             Ok(_) => micros.push(elapsed),
@@ -197,7 +202,7 @@ fn init() -> Extension {
 mod tests {
     use std::io::{BufRead, BufReader, Write};
     use std::net::TcpListener;
-    use std::sync::{Mutex, MutexGuard, OnceLock};
+    use std::sync::{Arc, Mutex, MutexGuard, OnceLock};
     use std::time::Duration;
 
     use super::*;
@@ -232,6 +237,36 @@ mod tests {
             }
         });
         addr
+    }
+
+    /// Echo server that also keeps every line it was sent, so a test can assert
+    /// what actually went over the wire rather than what it hoped went.
+    fn spawn_recording_stub() -> (String, Arc<Mutex<Vec<String>>>) {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let addr = listener.local_addr().expect("addr").to_string();
+        let received = Arc::new(Mutex::new(Vec::new()));
+        let sink = Arc::clone(&received);
+        std::thread::spawn(move || {
+            for stream in listener.incoming() {
+                let Ok(stream) = stream else { continue };
+                let sink = Arc::clone(&sink);
+                std::thread::spawn(move || {
+                    let mut writer = stream.try_clone().expect("clone");
+                    let mut reader = BufReader::new(stream);
+                    let mut line = String::new();
+                    while reader.read_line(&mut line).unwrap_or(0) > 0 {
+                        sink.lock()
+                            .unwrap_or_else(|e| e.into_inner())
+                            .push(line.trim_end().to_string());
+                        if writer.write_all(b"{}\n").is_err() {
+                            break;
+                        }
+                        line.clear();
+                    }
+                });
+            }
+        });
+        (addr, received)
     }
 
     #[test]
@@ -276,11 +311,40 @@ mod tests {
         let addr = spawn_stub();
         let extension = init().testing();
         let _ = extension.call("addr", Some(vec![addr]));
-        let (output, code) =
-            extension.call("bench", Some(vec!["5".to_string(), "true".to_string()]));
+        let (output, code) = extension.call(
+            "bench",
+            Some(vec![
+                "5".to_string(),
+                "true".to_string(),
+                "ping".to_string(),
+            ]),
+        );
         assert_eq!(code, 0);
         assert!(output.contains(r#""n":5"#), "unexpected output: {output}");
         assert!(!output.contains("error"), "unexpected output: {output}");
+    }
+
+    #[test]
+    fn bench_sends_the_callers_payload_verbatim() {
+        // The shim must not decide what the daemon is asked; it only times the
+        // asking (ADR-0005: payloads are opaque). Before this, `bench` built its
+        // own payload, and the daemon answered every one of them with an error.
+        let _guard = serialise();
+        let (addr, received) = spawn_recording_stub();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec![addr]));
+        let payload = r#"{"id":"bench","verb":"ping"}"#;
+        let (_, code) = extension.call(
+            "bench",
+            Some(vec![
+                "3".to_string(),
+                "true".to_string(),
+                payload.to_string(),
+            ]),
+        );
+        assert_eq!(code, 0);
+        let seen = received.lock().unwrap_or_else(|e| e.into_inner());
+        assert_eq!(*seen, vec![payload.to_string(); 3]);
     }
 
     #[test]
