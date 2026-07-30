@@ -1,4 +1,5 @@
 docs/handoffs/
+.claude/worktrees/
 
 # HEMTT
 .hemttout/
