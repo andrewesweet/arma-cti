@@ -10,6 +10,16 @@ if (fileExists "harness.sqf") then {
     call compile preprocessFileLineNumbers "harness.sqf";
 };
 
+// Without these, a client that connects but never enters the mission is
+// indistinguishable from one that never connected at all.
+onPlayerConnected {
+    diag_log format ["CTI|player_connected name=%1 id=%2 uid=%3 owner=%4 jip=%5",
+        _name, _id, _uid, _owner, _jip];
+};
+onPlayerDisconnected {
+    diag_log format ["CTI|player_disconnected name=%1 id=%2", _name, _id];
+};
+
 diag_log format ["CTI|mission_running world=%1 tickTime=%2", worldName, diag_tickTime];
 diag_log format ["CTI|server_version=%1", productVersion];
 
@@ -52,15 +62,13 @@ if (_watchFor > 0) then {
     [_watchFor] call cti_fnc_desyncWatch;
     diag_log format ["CTI|desync_watch_started window=%1", _watchFor];
 
-    // Wait for a headless client before loading it, then give it something to
-    // simulate: a clean reading off an idle client says the connection held,
-    // not that the link carries a player's traffic.
+    // Wait for a client, then give it something to simulate: a clean reading
+    // off an idle client says the connection held, not that the link carries a
+    // player's traffic. Waits for any client, headed or headless — which one
+    // turned up decides whether the load is handed over or stays server-owned.
     [] spawn {
         private _deadline = diag_tickTime + 120;
-        waitUntil {
-            (count allUsers > 0 && {(getUserInfo (allUsers # 0)) param [7, false]})
-                || { diag_tickTime > _deadline }
-        };
+        waitUntil { count allUsers > 0 || { diag_tickTime > _deadline } };
         [] call cti_fnc_desyncLoad;
     };
 };

@@ -23,16 +23,17 @@ if (!isServer) exitWith { 0 };
 
 // Index 1 of getUserInfo is the client's owner id, which is what setGroupOwner
 // wants; index 7 says whether it is headless.
+//
+// A headless client is loaded by handing it ownership, because it simulates
+// what it owns and nothing else. A headed client needs the opposite: the AI
+// stay server-owned, and the client pays for receiving their updates, which is
+// the traffic a player actually carries. So ownership transfer is conditional
+// and the spawning is not.
 private _target = -1;
 {
     private _info = getUserInfo _x;
     if (count _info > 7 && {_info # 7}) then { _target = _info # 1 };
 } forEach allUsers;
-
-if (_target < 0) exitWith {
-    diag_log "CTI|desync_load skipped=no_headless_client";
-    0
-};
 
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
@@ -58,10 +59,13 @@ for "_i" from 0 to (_groupCount - 1) do {
     (_destination get "position") params ["_toEast", "_toNorth"];
     _group move [_toEast, _toNorth, 0];
 
-    if (_group setGroupOwner _target) then { _transferred = _transferred + 1 };
+    if (_target >= 0 && {_group setGroupOwner _target}) then {
+        _transferred = _transferred + 1;
+    };
 };
 
-diag_log format ["CTI|desync_load groups=%1 units_each=%2 transferred=%3 owner=%4",
-    _groupCount, _unitCount, _transferred, _target];
+diag_log format ["CTI|desync_load groups=%1 units_each=%2 transferred=%3 owner=%4 mode=%5",
+    _groupCount, _unitCount, _transferred, _target,
+    ["server_owned", "handed_to_headless"] select (_target >= 0)];
 
 _transferred

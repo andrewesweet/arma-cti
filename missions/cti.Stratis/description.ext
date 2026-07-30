@@ -21,6 +21,13 @@ disabledAI = 1;
 joinUnassigned = 1;
 enableDebugConsole = 1;
 
+// A joining client takes the first free role instead of stopping at role
+// selection. The server initialises the mission itself (-autoInit, which needs
+// persistent = 1 and this respawn type), so there is a running mission to be
+// dropped into — which is the case this setting describes and the case a
+// headless client already benefits from.
+skipLobby = 1;
+
 // The map this mission is played on. The addon looks its manifest up by
 // worldName, so this is a cross-check rather than the lookup itself: if the two
 // disagree, the mission was copied to a map its manifest was never authored for.
