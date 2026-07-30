@@ -162,6 +162,39 @@ options.ignore = ["AGLtoASL", "ASLtoAGL"]
 Critical lints cannot be disabled or downgraded.
 Source: <https://raw.githubusercontent.com/BrettMayson/HEMTT/main/book/configuration/lints.md>
 
+### 1.3.1 There is no file- or line-scoped lint suppression (measured, HEMTT 1.20.1)
+
+Every lint configuration above is **project-wide**. HEMTT 1.20.1 offers no way to suppress an SQF
+lint for one file, one line, or one addon:
+
+- `#pragma hemtt suppress <code>` exists, but it takes **preprocessor** codes (`pe*`, `pw*`).
+  Every lint code tried against it — `s09_banned_command`, `banned_commands`, `L-S09`, `s09`,
+  `sqf.banned_commands`, `lints.sqf.banned_commands` — returns
+  `error[PE21]: unknown #pragma suppress`.
+- The only documented inline escapes are `#pragma hemtt flag pe23_ignore_has_include` and
+  `#pragma hemtt ignore_variables [...]` (with its `// IGNORE_PRIVATE_WARNING [...]` alias), which
+  serve the `not_private` family alone.
+- `banned_commands` accepts two options, `banned` and `ignore`. `ignore` removes a command from
+  checking **everywhere**; it cannot name the file allowed to use it.
+- `addon.toml` carries `no_bin`, `no_rap`, `properties`, `exclude` and `files`. There is no
+  `lints` section, so per-addon severity is not available either.
+
+Measured against the binary directly: `hemtt --version` reports 1.20.1; the pragma vocabulary and
+the lint option names above come from its embedded documentation and its own error output, not
+from the book.
+
+**Consequence for this project.** The contract wants `random` banned everywhere *except* the
+seeded PRNG adapter that wraps it, which is a shape HEMTT cannot express. So `random` is exempted
+in `.hemtt/project.toml` via `options.ignore` and re-banned by `tools/check_sqf_bans.py`, a second
+step in `just check-sqf` that allows each banned command in a named allow-list of files and
+nowhere else. It strips comments and string literals before matching, so prose mentioning a banned
+command is not a finding, and it matches case-insensitively because SQF is. `sleep` and `uiSleep`
+need no exemption yet and stay banned by both tiers; the same allow-list is where the CBA
+scheduler adapter's exemption will go when one exists.
+
+Revisit if HEMTT gains scoped suppression: the tool exists only to supply a scope the linter
+cannot, and it should be deleted the day the linter can.
+
 ### 1.4 Rhai script hooks for custom pipeline steps
 
 Confirmed. Hooks are Rhai scripts in `.hemtt/hooks/{phase}/`, run in alphabetical order within a phase.
