@@ -9,6 +9,7 @@ Personal Arma 3 Capture the Island scenario, developed primarily by autonomous a
 - `CONTEXT.md` — domain glossary. Use its vocabulary exactly; respect the _Avoid_ lists.
 - `docs/adr/` — binding decisions. Flag conflicts explicitly; never silently override.
 - `docs/mvp-scope.md` — what is in and out of the MVP.
+- `docs/reference/arma-wiki/` — vendored Bohemia wiki; the live one is Cloudflare-blocked from here. Check it before experimenting on engine behaviour. A day of Phase 0 went to rediscovering one documented sentence.
 
 ## Model roles
 
@@ -18,19 +19,22 @@ Personal Arma 3 Capture the Island scenario, developed primarily by autonomous a
 
 ## Command surface
 
-Interact with the project through `just` only. (Recipes land during Phase 0; table updates as they arrive.)
+Interact with the project through `just` only.
 
 | Command | Purpose | Requires Arma | Run when |
 |---|---|---|---|
-| `just check` | HEMTT lints, schema freshness, grep lints | No | Every edit |
-| `just unit` | pytest, cargo test, SQF-VM suite | No | Every edit |
-| `just build` | HEMTT build + shim build | No | Before any Arma tier |
-| `just accept <spec-id>` | Server+HC bring-up, one spec | Yes | On behaviour change |
-| `just accept-all` | Full acceptance suite | Yes | Pre-commit for gameplay changes |
+| `just check` | cog, HEMTT lints, ruff, ty, rustfmt, clippy | No | Every edit |
+| `just unit` | pytest, cargo test | No | Every edit |
+| `just fast` | `check` + `unit` | No | Every edit |
+| `just build` | HEMTT addon, shim `.so`, mission PBOs | No | Before any Arma tier |
+| `just build-shim-windows` | Cross-compiled `.dll` | No | Before a play session |
+| `just spike` | Server + HC + stub daemon, phase-0 measurements | Yes | Ad hoc |
+
+Not yet built: `just accept <spec-id>` and `just accept-all`, the acceptance tiers. Phase 1.
 
 ## Failure classes
 
-Every harness verdict carries a `class`. Read it before anything else. Untyped red = harness bug; fix the harness first.
+Every harness verdict carries a `class`. Read it before anything else. Untyped red = harness bug; fix the harness first. _(validated ×1 — Phase 0: `infra_unavailable` fired on a stale daemon holding the port and correctly refused to be a result.)_
 
 | Class | Required response |
 |---|---|
@@ -48,6 +52,8 @@ Every harness verdict carries a `class`. Read it before anything else. Untyped r
 **Always**: run `just check` + `just unit` after every edit; read the failure bundle before modifying code when one exists.
 
 **Never**: edit an acceptance spec to make it pass; add a sleep, retry, or timeout extension to make a test pass; introduce a bare `random` or bare `sleep` in SQF (seeded PRNG and CBA scheduler adapters only); treat `infra_unavailable` as a result.
+
+The Arma tier shares this machine with the human's play sessions, and WSL2 mirrored networking shares the port space with Windows. The tier uses **2402–2406** and must never take 2302–2306.
 
 ## Toolchains
 
