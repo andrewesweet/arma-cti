@@ -34,6 +34,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - A headless client never entered the mission: its `HeadlessClient_F` slot had no `name`, and an
   unnamed slot is never assigned.
-
 - The auto-format hook ran `rustfmt` at edition 2021 against an edition 2024 crate, so it wrote
   files that `cargo fmt --check` then rejected.
