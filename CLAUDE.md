@@ -9,7 +9,7 @@ Personal Arma 3 Capture the Island scenario, developed primarily by autonomous a
 - `CONTEXT.md` — domain glossary. Use its vocabulary exactly; respect the _Avoid_ lists.
 - `docs/adr/` — binding decisions. Flag conflicts explicitly; never silently override.
 - `docs/mvp-scope.md` — what is in and out of the MVP.
-- `docs/reference/arma-wiki/` — vendored Bohemia wiki, now the whole of it (6,690 pages); the live one is Cloudflare-blocked from here. Check it before experimenting on engine behaviour. A day of Phase 0 went to rediscovering one documented sentence.
+- `docs/reference/arma-wiki/` — vendored Bohemia wiki, now the whole of it (6,690 pages); the live one is Cloudflare-blocked from here. Check it before experimenting on engine behaviour, and before writing your own version of anything the engine might already do. A day of Phase 0 went to rediscovering one documented sentence; Phase 1 built a code generator around a JSON parser the engine had shipped two versions earlier.
   - Paths are guessable: `commands/setDamage.wiki`, `functions/BIS_fnc_spawnGroup.wiki`, plus `topics/`, `classnames/`, `templates/`. `MANIFEST.json` maps every title to its path and carries the redirect aliases. Read a directory's `INDEX.md` rather than listing it — `commands/` alone holds 2,672 files.
   - Which games a page applies to lives in its `// categories:` header, never in the wikitext: BIKI generates categories from templates, so grepping page source for `Arma 3` finds nothing.
   - Pages tagged only for pre-Arma-3 titles are excluded, so a miss is not proof the wiki lacks the page.

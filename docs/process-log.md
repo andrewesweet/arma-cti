@@ -35,3 +35,17 @@ First real retro. Trigger: phase completion.
 **Defects fixed in passing.** `format-on-edit.py` ran `rustfmt --edition 2021` against an edition-2024 crate, so it wrote files `cargo fmt --check` then rejected — an auto-formatter that disagrees with the gate is worse than no formatter. `ruff` 0.16 formats Python inside Markdown, which would silently rewrite third-party code quoted verbatim in research documents; `docs/` is now excluded, and the general rule is that a formatter must never rewrite a quotation.
 
 **Status.** `CLAUDE.md` failure classes: `unproven` → `validated ×1`. The rest of `CLAUDE.md` survived the phase unchanged apart from the amendments above. `playtest-brief`, `playtest-ingest` and `retro` remain `unproven` — `retro` has now had one use, this entry.
+
+## 2026-07-30 — retro: ad-hoc, Phase 1 (#9-#12)
+
+Trigger: user-directed, on discovering `toJSON`/`fromJSON`.
+
+**Findings.** *Read first* told an agent to consult the wiki "before experimenting on engine behaviour". That is a narrower trigger than it reads: the expensive miss this phase was not an experiment but an assumption. SQF was assumed to have no JSON parser, so `tools/generate_manifest_sqf.py` and `tools/generate_command_sqf.py` were built to render authored data into SQF literals — while `toJSON`/`fromJSON` had been engine-native since 2.18 and the server runs 2.20. The wiki was consulted repeatedly and correctly this phase (`random` syntax 3, `getUserInfo`, `CfgFunctions`, `loadFile`), so the instruction works when it fires; it simply did not fire for "does this already exist". Same shape, second instance: `skipLobby = 1` — the fix that made the headed client join unattended — was documented all along and sat on a closed issue's eliminated list.
+
+**Applied** (human-requested): *Read first* now says to check the wiki before experimenting on engine behaviour **and before writing your own version of anything the engine might already do**, with the generator as the second worked example beside Phase 0's lost day.
+
+**Proposed, awaiting sign-off.** (a) A *Working style* line that an elimination holds only in the context it was tested in — `skipLobby` was written off against a server whose mission was not initialised, and re-tested against one that was, it worked first time. (b) Failure-class table `validated ×1` → `×2`: a deliberately emptied manifest produced `assertion_failed` in-world and the harness refused to pass, which is the second time the table earned its keep.
+
+**Issues raised rather than fixed here.** #22 (replace the generated-SQF pipeline with `loadFile` + `fromJSON`; flagged ADR-0012-adjacent), #21 (exercise the client-to-gateway leg, blocked by #18).
+
+**Status.** `retro` has now had two uses and has not needed amending; still `unproven` pending a use that tests it rather than exercising it.
