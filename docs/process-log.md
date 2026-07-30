@@ -44,7 +44,7 @@ Trigger: user-directed, on discovering `toJSON`/`fromJSON`.
 
 **Applied** (human-requested): *Read first* now says to check the wiki before experimenting on engine behaviour **and before writing your own version of anything the engine might already do**, with the generator as the second worked example beside Phase 0's lost day.
 
-**Proposed, awaiting sign-off.** (a) A *Working style* line that an elimination holds only in the context it was tested in — `skipLobby` was written off against a server whose mission was not initialised, and re-tested against one that was, it worked first time. (b) Failure-class table `validated ×1` → `×2`: a deliberately emptied manifest produced `assertion_failed` in-world and the harness refused to pass, which is the second time the table earned its keep.
+**Also applied, on sign-off.** A *Working style* line that an elimination holds only in the context it was tested in — `skipLobby` was written off against a server whose mission was not initialised, and against one that was, it worked first time. And the failure-class table goes `validated ×1` → `×2`: a deliberately emptied manifest produced `assertion_failed` in-world and the harness refused to pass rather than booting an empty world, which is the second time the table earned its keep.
 
 **Issues raised rather than fixed here.** #22 (replace the generated-SQF pipeline with `loadFile` + `fromJSON`; flagged ADR-0012-adjacent), #21 (exercise the client-to-gateway leg, blocked by #18).
 

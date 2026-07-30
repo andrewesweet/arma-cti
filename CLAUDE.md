@@ -37,7 +37,7 @@ Not yet built: `just accept <spec-id>` and `just accept-all`, the acceptance tie
 
 ## Failure classes
 
-Every harness verdict carries a `class`. Read it before anything else. Untyped red = harness bug; fix the harness first. _(validated ×1 — Phase 0: `infra_unavailable` fired on a stale daemon holding the port and correctly refused to be a result.)_
+Every harness verdict carries a `class`. Read it before anything else. Untyped red = harness bug; fix the harness first. _(validated ×2 — Phase 0: `infra_unavailable` fired on a stale daemon holding the port and correctly refused to be a result. Phase 1: a deliberately emptied manifest produced `assertion_failed` in-world and the harness refused to pass rather than booting an empty world.)_
 
 | Class | Required response |
 |---|---|
@@ -80,6 +80,7 @@ Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanic
 - The gates above are this project's verification. Do not add further verification passes, re-checks, or verifier subagents beyond them.
 - Delegate to subagents only for sizeable, genuinely independent tracks of work. Do not delegate what you can finish yourself in a handful of tool calls, and never to double-check your own work.
 - Ground progress claims in tool results from this session: quote failing output, name skipped steps, mark unverified work as unverified.
+- An elimination holds only in the context it was tested. Before inheriting one, check that context still applies: `skipLobby` sat on a closed issue's eliminated list, written off against a server whose mission was not initialised; against one that was, it worked first time.
 - In any review pass, report everything you find; filtering by severity happens in a separate pass, not during the review.
 - Match written documents to what the task needs — no filler sections, boilerplate, or redundant summaries. Lead every summary with the outcome.
 
