@@ -18,7 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from cti_daemon import commands, economy, port
+from cti_daemon import commands, economy, port, squads
 
 BANNER = (
     "// Generated from src/cti_daemon/commands.py and config/economy.json by\n"
@@ -29,8 +29,9 @@ HEADER = (
     "/*\n"
     " * Author: arma-cti (generated)\n"
     " * The Command Port schema, as SQF sees it: which Commands exist and what\n"
-    " * each needs, which sides command, the rejection codes the daemon can\n"
-    " * return, and the Squad price table for display.\n"
+    " * each needs, which sides command, which Orders a Squad can be given, the\n"
+    " * rejection codes the daemon can return, and the Squad price table for\n"
+    " * display.\n"
     " *\n"
     " * Read through cti_fnc_command rather than called directly.\n"
     " *\n"
@@ -69,7 +70,7 @@ def render(table: economy.EconomyTable) -> str:
         [(name, _array([_string(arg) for arg in args])) for name, args in commands.EFFECTS.items()],
         1,
     )
-    squads = _pairs(
+    price_table = _pairs(
         [
             (
                 squad.id,
@@ -91,9 +92,14 @@ def render(table: economy.EconomyTable) -> str:
             ("commands", catalogue),
             ("effects", effects),
             ("sides", _array([_string(side) for side in commands.SIDES])),
+            ("orders", _array([_string(order) for order in squads.ORDERS])),
+            (
+                "orders_needing_objective",
+                _array([_string(order) for order in squads.NEEDS_OBJECTIVE]),
+            ),
             ("rejection_codes", _array([_string(code) for code in sorted(port.REJECTION_CODES)])),
             ("starting_funds", str(table.starting_funds)),
-            ("squads", squads),
+            ("squads", price_table),
         ],
         0,
     )

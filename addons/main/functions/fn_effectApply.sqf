@@ -30,6 +30,12 @@ if (_name isEqualTo "objective_captured") exitWith {
     true
 };
 
+if (_name isEqualTo "order_issued") exitWith {
+    [_args getOrDefault ["squad", ""],
+        _args getOrDefault ["order", ""],
+        _args getOrDefault ["objective", ""]] call cti_fnc_orderApply
+};
+
 if (_name isNotEqualTo "squad_spawned") exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed unknown_effect=%1", _name];
     false
@@ -65,7 +71,17 @@ for "_i" from 1 to _size do {
     _group createUnit [_unitType, [_east, _north, 0], [], 30, "FORM"];
 };
 
-diag_log format ["CTI|effect_applied effect=%1 side=%2 squad_type=%3 units=%4 base=%5",
-    _name, _sideName, _args getOrDefault ["squad_type", "?"], count units _group, _base get "id"];
+// The daemon minted the id; the world records which group answers to it, so an
+// Order naming that Squad has something to reach (#14).
+private _squadId = _args getOrDefault ["squad", ""];
+(missionNamespace getVariable ["cti_squads", createHashMap]) set [_squadId, _group];
+_group setVariable ["cti_squad", _squadId, true];
 
-true
+diag_log format ["CTI|effect_applied effect=%1 side=%2 squad=%3 squad_type=%4 units=%5 base=%6",
+    _name, _sideName, _squadId, _args getOrDefault ["squad_type", "?"],
+    count units _group, _base get "id"];
+
+// A new Squad is in Reserve until it is told otherwise, which is the daemon's
+// view of it too. Applying it here rather than assuming it means a Squad
+// standing at its Base is under an Order like any other, not a special case.
+[_squadId, "reserve", ""] call cti_fnc_orderApply

@@ -29,11 +29,19 @@ OWNERS: Final = (*SIDES, "NEUTRAL", "CONTESTED")
 # build and a Command the daemon accepts cannot drift apart.
 CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
     "purchase": ("squad_type",),
+    # Reserve names no ground, but it travels in the same shape as the other
+    # two rather than in a second one: a constructor with a fixed argument list
+    # is a constructor SQF cannot build wrong.
+    "order": ("squad", "order", "objective"),
 }
 
-# The effects a Command can produce, and the arguments each carries.
+# The effects a Command can produce, and the arguments each carries. An
+# Objective changing hands is one of them even though no Command asks for it —
+# the campaign's own rules push it, and the game applies it the same way.
 EFFECTS: Final[dict[str, tuple[str, ...]]] = {
-    "squad_spawned": ("squad_type", "size"),
+    "squad_spawned": ("squad", "squad_type", "size"),
+    "order_issued": ("squad", "order", "objective"),
+    "objective_captured": ("objective",),
 }
 
 

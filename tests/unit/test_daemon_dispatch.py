@@ -127,7 +127,33 @@ def test_a_command_is_carried_inside_the_envelope_not_beside_it(tmp_path: Path) 
         payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
     )
     assert reply["status"] == "ok"
-    assert reply["result"] == {"funds": 200}
+    assert reply["result"] == {"squad": "WEST-1", "funds": 200}
+
+
+def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
+    tmp_path: Path,
+) -> None:
+    # One wire format for every Command (#14): the Order verb is a payload the
+    # port judges, not a second transport verb beside `command`.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply_to(
+        daemon,
+        id="c-7",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    reply = reply_to(
+        daemon,
+        id="c-8",
+        verb="command",
+        payload={
+            "command": "order",
+            "side": "WEST",
+            "args": {"squad": "WEST-1", "order": "capture", "objective": "agia_marina"},
+        },
+    )
+    assert reply["status"] == "ok"
+    assert reply["result"]["order"] == "capture"
 
 
 def test_an_accepted_command_leaves_its_effect_on_the_outbox(tmp_path: Path) -> None:

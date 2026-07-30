@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon.commands import SIDES, Effect, serialise_effect
+from cti_daemon.squads import Roster
 
 if TYPE_CHECKING:
     from cti_daemon.economy import EconomyTable, Ledger
@@ -44,6 +45,10 @@ class Campaign:
     table: EconomyTable
     ledger: Ledger
     outbox: Outbox
+    # The Squads each side has bought and what each has been told to do (#14).
+    # Ownership, Funds and Squads are one playthrough's strategic state, so they
+    # sit behind one object rather than three the caller has to keep in step.
+    roster: Roster = field(default_factory=Roster)
     elapsed: float = 0.0
     _states: dict[str, ObjectiveState] = field(default_factory=dict)
     _since_payout: float = 0.0
@@ -57,6 +62,16 @@ class Campaign:
     def owner(self, objective: str) -> str:
         """Who holds `objective` — a side, Neutral, or Contested."""
         return self._states[objective].owner
+
+    def holds(self, objective: str) -> str | None:
+        """Who holds `objective`, or None when this map has no such Objective.
+
+        The forgiving reading of `owner`, for validating a Command that names
+        ground: an Objective nobody authored is a Commander's mistake to be
+        told about, not an exception to escape the port.
+        """
+        state = self._states.get(objective)
+        return None if state is None else state.owner
 
     def owners(self) -> dict[str, str]:
         """Every Objective's owner, for a Commander to reason over."""

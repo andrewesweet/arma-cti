@@ -63,6 +63,9 @@ private _owners = createHashMap;
 
 missionNamespace setVariable ["cti_map", _map, true];
 missionNamespace setVariable ["cti_objectiveOwner", _owners, true];
+// Squad id to group, filled as Squads are bought. An Order names a Squad, so
+// this is what an Order is resolved through (#14).
+missionNamespace setVariable ["cti_squads", createHashMap, true];
 
 diag_log format ["CTI|world_built map=%1 world=%2 objectives=%3 bases=%4",
     _map get "id", _map get "world", count _objectives, count _bases];

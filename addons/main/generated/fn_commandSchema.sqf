@@ -4,8 +4,9 @@
 /*
  * Author: arma-cti (generated)
  * The Command Port schema, as SQF sees it: which Commands exist and what
- * each needs, which sides command, the rejection codes the daemon can
- * return, and the Squad price table for display.
+ * each needs, which sides command, which Orders a Squad can be given, the
+ * rejection codes the daemon can return, and the Squad price table for
+ * display.
  *
  * Read through cti_fnc_command rather than called directly.
  *
@@ -15,13 +16,18 @@
  */
 createHashMapFromArray [
     ["commands", createHashMapFromArray [
-        ["purchase", ["squad_type"]]
+        ["purchase", ["squad_type"]],
+        ["order", ["squad", "order", "objective"]]
     ]],
     ["effects", createHashMapFromArray [
-        ["squad_spawned", ["squad_type", "size"]]
+        ["squad_spawned", ["squad", "squad_type", "size"]],
+        ["order_issued", ["squad", "order", "objective"]],
+        ["objective_captured", ["objective"]]
     ]],
     ["sides", ["WEST", "EAST"]],
-    ["rejection_codes", ["insufficient_funds", "malformed_command", "unknown_command", "wrong_side"]],
+    ["orders", ["capture", "defend", "reserve"]],
+    ["orders_needing_objective", ["capture", "defend"]],
+    ["rejection_codes", ["already_held", "insufficient_funds", "malformed_command", "unknown_command", "unknown_squad", "wrong_side"]],
     ["starting_funds", 300],
     ["squads", createHashMapFromArray [
         ["rifle", createHashMapFromArray [

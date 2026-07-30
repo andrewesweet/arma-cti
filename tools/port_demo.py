@@ -1,11 +1,13 @@
 """Issue Commands to a running daemon, the way the AI Commander eventually will.
 
-#12's demo: run this against the daemon while the Arma tier is up, and a Squad
-appears at that side's Base while the side's Funds drop. It speaks the same
-envelope and the same Command format the human UI does — that is the point of
-there being one wire format.
+#12's demo: buy a Squad while the Arma tier is up and one appears at that side's
+Base while the side's Funds drop. #14's: order it onto an Objective and watch it
+go. Both speak the same envelope and the same Command format the human UI does —
+that is the point of there being one wire format.
 
-    uv run python tools/port_demo.py --side WEST --squad rifle
+    uv run python tools/port_demo.py purchase --side WEST --squad-type rifle
+    uv run python tools/port_demo.py order --side WEST --squad WEST-1 \
+        --order capture --objective agia_marina
 """
 
 from __future__ import annotations
@@ -23,43 +25,75 @@ def send(sock: socket.socket, stream: IO[bytes], request: dict[str, Any]) -> dic
     return json.loads(stream.readline())
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Issue one Purchase and report what the rules made of it."""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=9099)
-    parser.add_argument("--side", default="WEST")
-    parser.add_argument("--squad", default="rifle")
-    parser.add_argument("--count", type=int, default=1, help="how many to buy in a row")
-    args = parser.parse_args(argv)
+def describe(reply: dict[str, Any]) -> str:
+    """Say what the rules made of a Command, judgement or refusal alike."""
+    if reply.get("status") == "ok":
+        return f"accepted: {reply['result']}"
+    reason = reply.get("reason") or reply.get("error") or {}
+    code = reason.get("code") or reason.get("class")
+    return f"{reply.get('status')}: {code} — {reason.get('detail')}"
 
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """Build the one Command this run will issue."""
+    # Shared as a parent rather than declared before the verb: `purchase --side`
+    # reads the way the Command does, and `--side purchase` does not.
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--host", default="127.0.0.1")
+    common.add_argument("--port", type=int, default=9099)
+    common.add_argument("--side", default="WEST")
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    verbs = parser.add_subparsers(dest="verb", required=True)
+
+    purchase = verbs.add_parser("purchase", parents=[common], help="buy a Squad at its Base")
+    purchase.add_argument("--squad-type", default="rifle")
+    purchase.add_argument("--count", type=int, default=1, help="how many to buy in a row")
+
+    order = verbs.add_parser("order", parents=[common], help="give a Squad a standing Order")
+    order.add_argument("--squad", required=True, help="the id a Purchase reported, e.g. WEST-1")
+    order.add_argument("--order", default="capture", choices=("capture", "defend", "reserve"))
+    order.add_argument("--objective", default="", help="required for Capture and Defend")
+
+    return parser.parse_args(argv)
+
+
+def payloads(args: argparse.Namespace) -> list[dict[str, Any]]:
+    """Render the run as Command payloads, in the order they go out."""
+    if args.verb == "purchase":
+        return [
+            {
+                "command": "purchase",
+                "side": args.side,
+                "args": {"squad_type": args.squad_type},
+            }
+            for _ in range(args.count)
+        ]
+    return [
+        {
+            "command": "order",
+            "side": args.side,
+            "args": {
+                "squad": args.squad,
+                "order": args.order,
+                "objective": args.objective,
+            },
+        }
+    ]
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Issue the Commands and report what the rules made of each."""
+    args = parse_args(argv)
     with (
         socket.create_connection((args.host, args.port), timeout=5) as sock,
         sock.makefile("rb") as stream,
     ):
-        for index in range(args.count):
+        for index, payload in enumerate(payloads(args)):
             reply = send(
-                sock,
-                stream,
-                {
-                    "id": f"demo-{index}",
-                    "verb": "command",
-                    "payload": {
-                        "command": "purchase",
-                        "side": args.side,
-                        "args": {"squad_type": args.squad},
-                    },
-                },
+                sock, stream, {"id": f"demo-{index}", "verb": "command", "payload": payload}
             )
-            status = reply.get("status")
-            if status == "ok":
-                funds = reply["result"]["funds"]
-                line = f"accepted: {args.side} bought a {args.squad} squad, {funds} Funds left"
-            else:
-                reason = reply.get("reason") or reply.get("error") or {}
-                code = reason.get("code") or reason.get("class")
-                line = f"{status}: {code} — {reason.get('detail')}"
-            print(line)  # noqa: T201 — this script's output is the demo
+            print(describe(reply))  # noqa: T201 — this script's output is the demo
     return 0
 
 

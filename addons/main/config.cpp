@@ -54,6 +54,8 @@ class CfgFunctions
             class presenceSample {};
             class presenceReport {};
             class objectiveOwnerSet {};
+            class orderApply {};
+            class orderEnforce {};
         };
 
         // Written by tools/generate_manifest_sqf.py from manifests/*.json.

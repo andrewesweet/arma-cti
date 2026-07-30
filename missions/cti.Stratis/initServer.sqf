@@ -59,6 +59,10 @@ if (isNil "cti_fnc_worldInit") then {
         // The world reports who is standing where; the daemon decides what
         // that means and pays for it.
         [] call cti_fnc_presenceReport;
+
+        // An Order outlives the waypoint that carried it, and the leader who
+        // was carrying it.
+        [] call cti_fnc_orderEnforce;
     };
 };
 

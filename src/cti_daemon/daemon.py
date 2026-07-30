@@ -34,17 +34,16 @@ class Daemon:
         self.outbox = Outbox()
         self._telemetry = Telemetry(telemetry_path)
         table = economy.load(economy_path or DEFAULT_ECONOMY)
-        ledger = economy.Ledger(table.starting_funds)
-        self.port = CommandPort(table=table, ledger=ledger, outbox=self.outbox)
-        # One ledger, shared: Funds spent through the port and Funds earned from
-        # Objectives are the same Funds, and a second ledger would be a second
-        # answer to how much a side has.
+        # One campaign object holds ownership, Funds and Squads, and the port
+        # judges against it. Two of anything here would be two answers to how
+        # much a side has or what it owns.
         self.campaign = campaign.Campaign(
             map_manifest=manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id],
             table=table,
-            ledger=ledger,
+            ledger=economy.Ledger(table.starting_funds),
             outbox=self.outbox,
         )
+        self.port = CommandPort(campaign=self.campaign)
 
     def handle_line(self, line: str) -> str:
         """Answer one request line. Every path produces a reply."""

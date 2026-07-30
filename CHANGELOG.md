@@ -27,6 +27,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport envelope, not the envelope itself. The daemon judges Commands against the Funds
   ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
   the outbox for both Commanders. `CONTEXT.md` gains **Command**.
+- Squads take **Orders**, and an Order is standing rather than a waypoint consumed and forgotten.
+  A Commander tells one Squad to Capture an Objective, Defend one, or fall back into Reserve, and
+  the three are distinct in the world: Capture searches the ground it is sent to, Defend goes
+  there and stays, Reserve walks home and holds its fire. The Order outlives the leader who was
+  carrying it — waypoints belong to the group, so the engine promotes a replacement and the Squad
+  carries on — and a sweep re-asserts it once the engine considers the waypoint finished, so a
+  Squad that chased a contact off its Objective goes back. Ordering a Capture on ground your own
+  side already holds is refused with a reason rather than accepted as a no-op.
+- A bought Squad gets an id its Commander can say out loud (`WEST-1`), counted up per side so a
+  resumed campaign mints the same ids in the same order. The Purchase reply carries it, so a
+  Squad can be ordered the moment it is bought.
+- A player-led Squad is told its Order rather than made to follow it: the engine's own task
+  framework puts it in the diary of whoever is in that group, with the ground as its destination.
+  Compliance stays voluntary.
+- `tools/port_demo.py` issues Orders as well as Purchases, and the Arma tier can boot the Phase-1
+  world against `spike/phase1.cfg` with a one-off in-world probe appended to its harness.
 - Objectives change hands by presence and pay income. A side alone in the capture radius takes an
   Objective after a held interval; both sides present makes it **Contested**, which is a real
   state that interrupts a capture, shows its own colour on the map and pays nobody. Every 60
